@@ -19,7 +19,7 @@ app.use(morgan('dev'));
 
 // Test route
 app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is connected!' });
+  res.json({ message: 'Gacor, Backend ready gan ingfokan!!!' });
 });
 
 app.use('/api/feedback', feedbackRoutes);
