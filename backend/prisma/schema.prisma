@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model FeedbackCategory {
+  id          Int            @id @default(autoincrement())
+  name        String
+  descriptions FeedbackDesc[]
+  forms       FeedbackForm[]
+}
+
+model FeedbackDesc {
+  id          Int             @id @default(autoincrement())
+  label       String          @unique
+  description String
+  category    FeedbackCategory @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  forms       FeedbackForm[]
+
+  @@index([categoryId])
+}
+
+model FeedbackForm {
+  id            Int             @id @default(autoincrement())
+  formId        String          // ID dari frontend
+  category      FeedbackCategory @relation(fields: [categoryId], references: [id])
+  categoryId    Int
+  description   FeedbackDesc    @relation(fields: [descriptionId], references: [id])
+  descriptionId Int
+  value         Int
+  suggestions   String?         @db.Text
+  createdAt     DateTime        @default(now())
+
+  @@unique([formId, descriptionId])
+  @@index([categoryId])
+  @@index([descriptionId])
+}
