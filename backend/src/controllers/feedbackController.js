@@ -67,4 +67,45 @@ exports.submitFeedback = async (req, res, next) => {
         console.error('Detailed error:', error);
         next(error);
     }
-}
+};
+
+exports.getFeedbackBySessionId = async (req, res, next) => {
+    try {
+        const { sessionId } = req.params;
+        const feedback = await prisma.feedbackForm.findMany({
+            where: { formId: sessionId },
+            include: {
+                category: true,
+                description: true
+            }
+        });
+
+        if (!feedback.length) {
+            return res.status(404).json({
+                message: 'Feedback session not found'
+            });
+        }
+
+        res.json(feedback);
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getFeedbackSummary = async (req, res, next) => {
+    try {
+        const summary = await prisma.feedbackForm.groupBy({
+            by: ['categoryId'],
+            _avg: {
+                value: true
+            },
+            _count: {
+                value: true
+            }
+        });
+
+        res.json(summary);
+    } catch (error) {
+        next(error);
+    }
+};
